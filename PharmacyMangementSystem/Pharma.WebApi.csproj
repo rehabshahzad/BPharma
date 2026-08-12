@@ -219,18 +219,30 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BrandController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\CustomerController.cs" />
+    <Compile Include="Controllers\CustomerReturnController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\FormulaController.cs" />
+    <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Controllers\SupplierController.cs" />
+    <Compile Include="Controllers\SupplierItemController.cs" />
+    <Compile Include="Controllers\SupplierReturnController.cs" />
     <Compile Include="DTOs\BrandDto.cs" />
     <Compile Include="DTOs\Category\CategoryResponseDto.cs" />
     <Compile Include="DTOs\Category\CreateCategoryDto.cs" />
     <Compile Include="DTOs\Category\UpdateCategoryDto.cs" />
+    <Compile Include="DTOs\CustomerDto.cs" />
+    <Compile Include="DTOs\CustomerReturnDto.cs" />
+    <Compile Include="DTOs\CustomerReturnItemDto.cs" />
     <Compile Include="DTOs\Employee\CreateEmployeeDto.cs" />
     <Compile Include="DTOs\Employee\EmployeeResponseDto.cs" />
     <Compile Include="DTOs\Employee\UpdateEmployeeDto.cs" />
     <Compile Include="DTOs\FormulaDto.cs" />
+    <Compile Include="DTOs\ItemDto.cs" />
     <Compile Include="DTOs\SupplierDto.cs" />
+    <Compile Include="DTOs\SupplierItemDto.cs" />
+    <Compile Include="DTOs\SupplierReturnDto.cs" />
+    <Compile Include="DTOs\SupplierReturnItemDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -305,6 +317,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Customer\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\bootstrap.min.js.map" />

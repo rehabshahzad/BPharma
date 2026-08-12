@@ -14,11 +14,13 @@ namespace Pharma.Entity.Entities
 
      
 
-        public int? PurchaseId { get; set; }
+        public int PurchaseId { get; set; }
         public virtual Purchase Purchase { get; set; } //supplier can be accessed thru purchase
 
         public DateTime ReturnDate { get; set; }
-
+        public virtual ICollection<SupplierReturnItem>
+     SupplierReturnItems
+        { get; set; }
 
         public string Reason { get; set; }
 
@@ -28,7 +30,7 @@ namespace Pharma.Entity.Entities
 
         public int? UpdatedByEmployeeId{ get; set; }
         public virtual Employee UpdatedByEmployee { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }

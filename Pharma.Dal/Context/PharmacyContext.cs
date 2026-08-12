@@ -2,7 +2,6 @@
 using PharmacyManagement.Entity.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure.Annotations;
 
 namespace Pharma.DAL.Context
@@ -95,6 +94,31 @@ namespace Pharma.DAL.Context
                 .WillCascadeOnDelete(false);
 
             //CUSTOMER
+            modelBuilder.Entity<Customer>()
+                .Property(c => c.FirstName)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<Customer>()
+               .Property(c => c.LastName)
+               .IsRequired()
+               .HasMaxLength(50);
+
+            modelBuilder.Entity<Customer>()
+               .Property(c => c.Email)
+               .IsOptional()
+               .HasMaxLength(50);
+
+            modelBuilder.Entity<Customer>()
+               .Property(c => c.Contact)
+               .IsRequired()
+               .HasMaxLength(50)
+               .HasColumnAnnotation( //old way of declaring unique, in core we can simply do .isUnique()
+                IndexAnnotation.AnnotationName,
+                new IndexAnnotation(
+                    new IndexAttribute(
+                        "IX_Contact")
+                    { IsUnique = true }));
 
 
             modelBuilder.Entity<Customer>()

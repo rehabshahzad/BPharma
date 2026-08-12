@@ -45,13 +45,23 @@
     <Compile Include="Security\PasswordHasher.cs" />
     <Compile Include="Services\BrandService.cs" />
     <Compile Include="Services\CategoryService.cs" />
+    <Compile Include="Services\CustomerReturnService.cs" />
+    <Compile Include="Services\CustomerService.cs" />
     <Compile Include="Services\EmployeeService.cs" />
     <Compile Include="Services\FormulaService.cs" />
     <Compile Include="Services\IBrandService.cs" />
     <Compile Include="Services\ICategoryService.cs" />
+    <Compile Include="Services\ICustomerReturnService.cs" />
+    <Compile Include="Services\ICustomerService.cs" />
     <Compile Include="Services\IEmployeeService.cs" />
     <Compile Include="Services\IFormulaService.cs" />
+    <Compile Include="Services\IItemService.cs" />
+    <Compile Include="Services\ISupplierItemService.cs" />
+    <Compile Include="Services\ISupplierReturnService.cs" />
     <Compile Include="Services\ISupplierService.cs" />
+    <Compile Include="Services\ItemService.cs" />
+    <Compile Include="Services\SupplierItemService.cs" />
+    <Compile Include="Services\SupplierReturnService.cs" />
     <Compile Include="Services\SupplierService.cs" />
   </ItemGroup>
   <ItemGroup>

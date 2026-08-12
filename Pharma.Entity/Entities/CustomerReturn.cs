@@ -10,7 +10,9 @@ namespace Pharma.Entity.Entities
    public  class CustomerReturn
     {
         public int CustomerReturnId { get; set; }
-
+        public virtual ICollection<CustomerReturnItem>
+    CustomerReturnItems
+        { get; set; }
         public int SaleId { get; set; }
         public virtual Sale Sale { get; set; }
 
@@ -24,6 +26,7 @@ namespace Pharma.Entity.Entities
 
         public int? UpdatedByEmployeeId { get; set; }
         public virtual Employee UpdatedByEmployee { get; set; }
-        public DateTime UpdatedAt {  get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt {  get; set; }
     }
 }

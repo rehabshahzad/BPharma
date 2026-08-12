@@ -124,14 +124,24 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BrandRepository.cs" />
     <Compile Include="Repositories\CategoryRepository.cs" />
+    <Compile Include="Repositories\Customer related stuff\CustomerRepository.cs" />
+    <Compile Include="Repositories\Customer related stuff\CustomerReturnRepository.cs" />
+    <Compile Include="Repositories\Customer related stuff\ICustomerRepository.cs" />
+    <Compile Include="Repositories\Customer related stuff\ICustomerReturnRepository.cs" />
     <Compile Include="Repositories\EmployeeRepository.cs" />
     <Compile Include="Repositories\FormulaRepository.cs" />
     <Compile Include="Repositories\IBrandRepository.cs" />
     <Compile Include="Repositories\ICategoryRepository.cs" />
     <Compile Include="Repositories\IEmployeeRepository.cs" />
     <Compile Include="Repositories\IFormulaRepository.cs" />
-    <Compile Include="Repositories\ISupplierRepository.cs" />
-    <Compile Include="Repositories\SupplierRepository.cs" />
+    <Compile Include="Repositories\SupplierRelatedStuff\ISupplierItemRepository.cs" />
+    <Compile Include="Repositories\SupplierRelatedStuff\ISupplierRepository.cs" />
+    <Compile Include="Repositories\IItemRepository.cs" />
+    <Compile Include="Repositories\SupplierRelatedStuff\ISupplierReturnRepository.cs" />
+    <Compile Include="Repositories\ItemRepository.cs" />
+    <Compile Include="Repositories\SupplierRelatedStuff\SupplierItemRepository.cs" />
+    <Compile Include="Repositories\SupplierRelatedStuff\SupplierRepository.cs" />
+    <Compile Include="Repositories\SupplierRelatedStuff\SupplierReturnRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Pharma.Entity\Pharma.Entity.csproj">
