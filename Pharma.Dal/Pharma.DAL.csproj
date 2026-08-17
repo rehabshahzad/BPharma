@@ -120,8 +120,21 @@
     <Compile Include="Migrations\202608101145477_UpdateMasterDataConfiguration.Designer.cs">
       <DependentUpon>202608101145477_UpdateMasterDataConfiguration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608121145220_UpdateReturnEntities.cs" />
+    <Compile Include="Migrations\202608121145220_UpdateReturnEntities.Designer.cs">
+      <DependentUpon>202608121145220_UpdateReturnEntities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608170516302_UpdatePurchaseFlow.cs" />
+    <Compile Include="Migrations\202608170516302_UpdatePurchaseFlow.Designer.cs">
+      <DependentUpon>202608170516302_UpdatePurchaseFlow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608171028508_UpdateSaleFlow.cs" />
+    <Compile Include="Migrations\202608171028508_UpdateSaleFlow.Designer.cs">
+      <DependentUpon>202608171028508_UpdateSaleFlow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\BatchRepository.cs" />
     <Compile Include="Repositories\BrandRepository.cs" />
     <Compile Include="Repositories\CategoryRepository.cs" />
     <Compile Include="Repositories\Customer related stuff\CustomerRepository.cs" />
@@ -130,10 +143,15 @@
     <Compile Include="Repositories\Customer related stuff\ICustomerReturnRepository.cs" />
     <Compile Include="Repositories\EmployeeRepository.cs" />
     <Compile Include="Repositories\FormulaRepository.cs" />
+    <Compile Include="Repositories\IBatchRepository.cs" />
     <Compile Include="Repositories\IBrandRepository.cs" />
     <Compile Include="Repositories\ICategoryRepository.cs" />
     <Compile Include="Repositories\IEmployeeRepository.cs" />
     <Compile Include="Repositories\IFormulaRepository.cs" />
+    <Compile Include="Repositories\IPurchaseRepository.cs" />
+    <Compile Include="Repositories\ISaleRepository.cs" />
+    <Compile Include="Repositories\PurchaseRepository.cs" />
+    <Compile Include="Repositories\SaleRepository.cs" />
     <Compile Include="Repositories\SupplierRelatedStuff\ISupplierItemRepository.cs" />
     <Compile Include="Repositories\SupplierRelatedStuff\ISupplierRepository.cs" />
     <Compile Include="Repositories\IItemRepository.cs" />
@@ -162,6 +180,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608101145477_UpdateMasterDataConfiguration.resx">
       <DependentUpon>202608101145477_UpdateMasterDataConfiguration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608121145220_UpdateReturnEntities.resx">
+      <DependentUpon>202608121145220_UpdateReturnEntities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608170516302_UpdatePurchaseFlow.resx">
+      <DependentUpon>202608170516302_UpdatePurchaseFlow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608171028508_UpdateSaleFlow.resx">
+      <DependentUpon>202608171028508_UpdateSaleFlow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

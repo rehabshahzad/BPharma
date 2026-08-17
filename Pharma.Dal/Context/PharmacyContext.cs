@@ -376,22 +376,22 @@ namespace Pharma.DAL.Context
                 .HasPrecision(12, 2);
 
             modelBuilder.Entity<Purchase>()
-                .Property(p => p.TaxAmount)
-                .HasPrecision(12, 2);
-
-            modelBuilder.Entity<Purchase>()
-                .Property(p => p.DeliveryCharges)
+                .Property(p => p.AdditionalCharges)
                 .HasPrecision(12, 2);
 
             modelBuilder.Entity<Purchase>()
                 .Property(p => p.TotalAmount)
                 .HasPrecision(12, 2);
 
+            modelBuilder.Entity<PurchaseItem>()
+                .Property(pi => pi.UnitPurchasePrice)
+                .HasPrecision(12, 2);
+
 
             //PURCHASE ITEM
             modelBuilder.Entity<PurchaseItem>()
                 .HasRequired(pi => pi.Purchase)
-                .WithMany()
+                .WithMany(p=> p.PurchaseItems)
                 .HasForeignKey(pi => pi.PurchaseId)
                 .WillCascadeOnDelete(false);
 
@@ -447,19 +447,24 @@ namespace Pharma.DAL.Context
                 .Property(s => s.SubtotalAmount)
                 .HasPrecision(12, 2);
 
+
             modelBuilder.Entity<Sale>()
-                .Property(s => s.DiscountAmount)
+                .Property(s => s.AdditionalCharges)
                 .HasPrecision(12, 2);
 
             modelBuilder.Entity<Sale>()
                 .Property(s => s.TotalAmount)
                 .HasPrecision(12, 2);
 
+            modelBuilder.Entity<SaleItem>()
+                .Property(si => si.UnitSalePrice)
+                .HasPrecision(12, 2);
+
             //SALE ITEM
 
             modelBuilder.Entity<SaleItem>()
                 .HasRequired(si => si.Sale)
-                .WithMany()
+                .WithMany(si=> si.SaleItems) //aik sale mei kafi zyada sale items ho skte haen
                 .HasForeignKey(si => si.SaleId)
                 .WillCascadeOnDelete(false);
 
@@ -470,8 +475,11 @@ namespace Pharma.DAL.Context
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<SaleItem>()
-                .Property(si => si.UnitPrice)
+                .Property(si => si.UnitSalePrice)
                 .HasPrecision(12, 2);
+
+           
+
 
             //BATCH ALLOCATION
             modelBuilder.Entity<BatchAllocation>()
@@ -482,7 +490,7 @@ namespace Pharma.DAL.Context
 
             modelBuilder.Entity<BatchAllocation>()
                 .HasRequired(ba => ba.Batch)
-                .WithMany()
+                .WithMany(b=> b.BatchAllocations)
                 .HasForeignKey(ba => ba.BatchId)
                 .WillCascadeOnDelete(false);
 

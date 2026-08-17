@@ -11,16 +11,11 @@ namespace Pharma.Entity.Entities
     public class SupplierReturn
     {
         public int SupplierReturnId { get; set; }
-
-     
-
         public int PurchaseId { get; set; }
         public virtual Purchase Purchase { get; set; } //supplier can be accessed thru purchase
 
         public DateTime ReturnDate { get; set; }
-        public virtual ICollection<SupplierReturnItem>
-     SupplierReturnItems
-        { get; set; }
+        public virtual ICollection<SupplierReturnItem> SupplierReturnItems { get; set; }
 
         public string Reason { get; set; }
 

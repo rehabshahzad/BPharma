@@ -137,7 +137,7 @@ namespace Pharma.BLL.Services
                 // Refund amount calculated by backend
                 item.RefundAmount =
                     item.ReturnQuantity *
-                    saleItem.UnitPrice;
+                    saleItem.UnitSalePrice;
 
 
                 item.CustomerReturnId =

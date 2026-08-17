@@ -20,7 +20,7 @@ namespace Pharma.Entity.Entities
         public int OrderedQuantity { get; set; }
 
         public decimal UnitPurchasePrice { get; set; }  //unitPprice *batch.receievedQuantity will give me the total id have to pay
-        public PurchaseItemStatus Status { get; set; }
+        
 
     }
 }

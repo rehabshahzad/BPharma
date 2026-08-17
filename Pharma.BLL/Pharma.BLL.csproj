@@ -43,12 +43,14 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\PasswordHasher.cs" />
+    <Compile Include="Services\BatchService.cs" />
     <Compile Include="Services\BrandService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\CustomerReturnService.cs" />
     <Compile Include="Services\CustomerService.cs" />
     <Compile Include="Services\EmployeeService.cs" />
     <Compile Include="Services\FormulaService.cs" />
+    <Compile Include="Services\IBatchService.cs" />
     <Compile Include="Services\IBrandService.cs" />
     <Compile Include="Services\ICategoryService.cs" />
     <Compile Include="Services\ICustomerReturnService.cs" />
@@ -56,10 +58,14 @@
     <Compile Include="Services\IEmployeeService.cs" />
     <Compile Include="Services\IFormulaService.cs" />
     <Compile Include="Services\IItemService.cs" />
+    <Compile Include="Services\IPurchaseService.cs" />
+    <Compile Include="Services\ISaleService.cs" />
     <Compile Include="Services\ISupplierItemService.cs" />
     <Compile Include="Services\ISupplierReturnService.cs" />
     <Compile Include="Services\ISupplierService.cs" />
     <Compile Include="Services\ItemService.cs" />
+    <Compile Include="Services\PurchaseService.cs" />
+    <Compile Include="Services\SaleService.cs" />
     <Compile Include="Services\SupplierItemService.cs" />
     <Compile Include="Services\SupplierReturnService.cs" />
     <Compile Include="Services\SupplierService.cs" />

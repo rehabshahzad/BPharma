@@ -16,11 +16,11 @@ namespace Pharma.Entity.Entities
         public int ItemId { get; set; }
         public virtual Item Item { get; set; }
 
-        public int Quantity { get; set; }
+        public int OrderedQuantity { get; set; }
 
-        public decimal UnitPrice { get; set; }
+        public decimal UnitSalePrice { get; set; }
 
-        //disocunt is only added at the end , no per item discount is added
+        
 
 
     }

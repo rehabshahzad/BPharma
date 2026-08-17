@@ -17,6 +17,6 @@ namespace Pharma.Entity.Entities
         public virtual Batch Batch { get; set; }
 
         public int AllocatedQuantity { get; set; }
-        public DateTime CreatedAt { get; set; } //employee already known by sale-item -> sale > sold by employeeid
+        public DateTime CreatedAt { get; set; } 
     }
 }

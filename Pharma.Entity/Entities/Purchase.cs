@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Pharma.Entity.Entities
 {
     public class Purchase
@@ -18,13 +19,11 @@ namespace Pharma.Entity.Entities
         public DateTime PurchaseDate { get; set; }
 
         public decimal SubtotalAmount { get; set; }
-        public decimal TaxAmount { get; set; }
-        public decimal DiscountAmount { get; set; }
-        public decimal DeliveryCharges { get; set; }
+        public decimal AdditionalCharges { get; set; }
         public decimal TotalAmount { get; set; }
 
         public string Notes { get; set; }
-        public string PurchaseStatus { get; set; }
+        public PurchaseItemStatus Status { get; set; }
 
         public int CreatedByEmployeeId { get; set; }
         public virtual Employee CreatedByEmployee { get; set; }
@@ -35,5 +34,6 @@ namespace Pharma.Entity.Entities
         public virtual Employee UpdatedByEmployee { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
+        public virtual ICollection<PurchaseItem> PurchaseItems { get; set; }
     }
 }

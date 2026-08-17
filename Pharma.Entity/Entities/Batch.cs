@@ -14,7 +14,7 @@ namespace Pharma.Entity.Entities
 
         public int PurchaseItemId { get; set; }
         public virtual PurchaseItem PurchaseItem { get; set; }
-        public BatchStatus status { get; set; }
+        public BatchStatus Status { get; set; }
 
         public string BatchNumber { get; set; }
 
@@ -29,10 +29,10 @@ namespace Pharma.Entity.Entities
         public virtual Employee CreatedByEmployee { get; set; }
 
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public virtual Employee UpdatedByEmployee { get;set; }
         public int? UpdatedByEmployeeId {  get; set; }
 
-
+        public virtual ICollection<BatchAllocation> BatchAllocations { get; set; }
     }
 }

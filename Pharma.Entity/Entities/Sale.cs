@@ -19,8 +19,8 @@ namespace Pharma.Entity.Entities
 
         //Total before sale-level discount.
         public decimal SubtotalAmount { get; set; }
+        public decimal AdditionalCharges { get; set; }
 
-        public decimal DiscountAmount { get; set; }
 
         //Final amount paid by the customer.
         public decimal TotalAmount { get; set; }
@@ -37,5 +37,6 @@ namespace Pharma.Entity.Entities
         public int? UpdatedByEmployeeId { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public virtual Employee UpdatedByEmployee { get; set; }
+        public virtual ICollection<SaleItem> SaleItems { get; set; }
     }
 }
