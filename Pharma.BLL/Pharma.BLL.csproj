@@ -57,7 +57,9 @@
     <Compile Include="Services\ICustomerService.cs" />
     <Compile Include="Services\IEmployeeService.cs" />
     <Compile Include="Services\IFormulaService.cs" />
+    <Compile Include="Services\IInventoryMovementService.cs" />
     <Compile Include="Services\IItemService.cs" />
+    <Compile Include="Services\InventoryMovementService.cs" />
     <Compile Include="Services\IPurchaseService.cs" />
     <Compile Include="Services\ISaleService.cs" />
     <Compile Include="Services\ISupplierItemService.cs" />

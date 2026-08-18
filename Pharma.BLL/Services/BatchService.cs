@@ -105,6 +105,8 @@ namespace Pharma.BLL.Services
             }
 
 
+            // Backend-controlled fields
+
             batch.BatchNumber =
                 batch.BatchNumber.Trim();
 
@@ -121,11 +123,75 @@ namespace Pharma.BLL.Services
                 employeeId;
 
 
-            _repository.AddBatch(batch);
+            /*
+             * Batch + InventoryMovement must either
+             * both succeed or both fail.
+             */
+            _repository.BeginTransaction();
 
-            _repository.SaveChanges();
+            try
+            {
+                _repository.AddBatch(
+                    batch
+                );
 
-            return batch;
+                _repository.SaveChanges();
+
+
+                var movement =
+                    new InventoryMovement
+                    {
+                        BatchId =
+                            batch.BatchId,
+
+                        MovementType =
+                            InventoryMovementType
+                                .PurchaseReceived,
+
+                       
+                        QuantityChange =
+                            batch.ReceivedQuantity,
+
+                        
+                        ReferenceId =
+                            batch.PurchaseItemId,
+
+                        Remarks =
+                            "Stock received from purchase.",
+
+                        MovementDate =
+                            DateTime.Now,
+
+                        PerformedByEmployeeId =
+                            employeeId
+                    };
+
+
+                _repository.AddInventoryMovement(
+                    movement
+                );
+
+                _repository.SaveChanges();
+
+
+                // -------------------------
+                // 3. COMMIT
+                // -------------------------
+
+                _repository.CommitTransaction();
+
+                return batch;
+            }
+            catch
+            {
+                /*
+                 * If Batch OR InventoryMovement fails,
+                 * undo everything.
+                 */
+                _repository.RollbackTransaction();
+
+                throw;
+            }
         }
 
 
@@ -168,6 +234,12 @@ namespace Pharma.BLL.Services
                 );
             }
 
+
+            /*
+             * V1:
+             * PurchaseItemId and ReceivedQuantity
+             * are not changed during update.
+             */
 
             existingBatch.BatchNumber =
                 batch.BatchNumber.Trim();
@@ -268,6 +340,93 @@ namespace Pharma.BLL.Services
                 throw new ArgumentException(
                     "Manufacturing date cannot be after expiry date."
                 );
+            }
+        }
+        public void ProcessExpiredBatches(int employeeId)
+        {
+            if (employeeId <= 0)
+            {
+                throw new ArgumentException(
+                    "Employee id is invalid."
+                );
+            }
+
+            var employee =
+                _repository.GetEmployeeById(
+                    employeeId
+                );
+
+            if (employee == null)
+            {
+                throw new KeyNotFoundException(
+                    "Employee does not exist."
+                );
+            }
+
+            var expiredBatches =
+                _repository.GetExpiredAvailableBatches();
+
+            _repository.BeginTransaction();
+
+            try
+            {
+                foreach (var batch in expiredBatches)
+                {
+                    int currentStock =
+                        _repository.GetCurrentStockForBatch(
+                            batch.BatchId
+                        );
+
+                    if (currentStock > 0)
+                    {
+                        var movement =
+                            new InventoryMovement
+                            {
+                                BatchId =
+                                    batch.BatchId,
+
+                                MovementType =
+                                    InventoryMovementType.ExpiredOut,
+
+                                QuantityChange =
+                                    -currentStock,
+
+                                ReferenceId =
+                                    null,
+
+                                Remarks =
+                                    "Batch expired.",
+
+                                MovementDate =
+                                    DateTime.Now,
+
+                                PerformedByEmployeeId =
+                                    employeeId
+                            };
+
+                        _repository.AddInventoryMovement(
+                            movement
+                        );
+                    }
+
+                    batch.Status =
+                        BatchStatus.Expired;
+
+                    batch.UpdatedByEmployeeId =
+                        employeeId;
+
+                    batch.UpdatedAt =
+                        DateTime.Now;
+                }
+
+                _repository.SaveChanges();
+
+                _repository.CommitTransaction();
+            }
+            catch
+            {
+                _repository.RollbackTransaction();
+                throw;
             }
         }
     }

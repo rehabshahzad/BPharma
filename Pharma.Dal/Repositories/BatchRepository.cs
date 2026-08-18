@@ -1,6 +1,8 @@
 ﻿using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
+using Pharma.Entity.Enums;
 using PharmacyManagement.Entity.Entities;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -10,6 +12,7 @@ namespace Pharma.Dal.Repositories
     public class BatchRepository : IBatchRepository
     {
         private readonly PharmacyDbContext _context;
+        private DbContextTransaction _transaction;
 
         public BatchRepository(PharmacyDbContext context)
         {
@@ -87,5 +90,46 @@ namespace Pharma.Dal.Repositories
         {
             _context.SaveChanges();
         }
+        public void AddInventoryMovement(
+    InventoryMovement movement)
+        {
+            _context.InventoryMovements.Add(movement);
+        }
+        public void BeginTransaction()
+        {
+            _transaction =
+                _context.Database.BeginTransaction();
+        }
+
+        public void CommitTransaction()
+        {
+            _transaction?.Commit();
+            _transaction?.Dispose();
+
+            _transaction = null;
+        }
+        public void RollbackTransaction()
+        {
+            _transaction?.Rollback();
+            _transaction?.Dispose();
+
+            _transaction = null;
+        }
+        public List<Batch> GetExpiredAvailableBatches()
+        {
+            return _context.Batches
+                .Where(b =>
+                    b.Status == BatchStatus.Available &&
+                    b.ExpiryDate <= DateTime.Now)
+                .ToList();
+        }
+        public int GetCurrentStockForBatch(int batchId)
+        {
+            return _context.InventoryMovements
+                .Where(im => im.BatchId == batchId)
+                .Select(im => (int?)im.QuantityChange)
+                .Sum() ?? 0;
+        }
+
     }
-}
+    }

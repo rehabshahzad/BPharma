@@ -132,6 +132,18 @@
     <Compile Include="Migrations\202608171028508_UpdateSaleFlow.Designer.cs">
       <DependentUpon>202608171028508_UpdateSaleFlow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608171145216_UpdateBatch-BatchAlloc.cs" />
+    <Compile Include="Migrations\202608171145216_UpdateBatch-BatchAlloc.Designer.cs">
+      <DependentUpon>202608171145216_UpdateBatch-BatchAlloc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608181120130_UpdateInventoryMovementFlow.cs" />
+    <Compile Include="Migrations\202608181120130_UpdateInventoryMovementFlow.Designer.cs">
+      <DependentUpon>202608181120130_UpdateInventoryMovementFlow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608181122479_UID.cs" />
+    <Compile Include="Migrations\202608181122479_UID.Designer.cs">
+      <DependentUpon>202608181122479_UID.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BatchRepository.cs" />
@@ -148,6 +160,8 @@
     <Compile Include="Repositories\ICategoryRepository.cs" />
     <Compile Include="Repositories\IEmployeeRepository.cs" />
     <Compile Include="Repositories\IFormulaRepository.cs" />
+    <Compile Include="Repositories\IInventoryMovementRepository.cs" />
+    <Compile Include="Repositories\InventoryMovementRepository.cs" />
     <Compile Include="Repositories\IPurchaseRepository.cs" />
     <Compile Include="Repositories\ISaleRepository.cs" />
     <Compile Include="Repositories\PurchaseRepository.cs" />
@@ -189,6 +203,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608171028508_UpdateSaleFlow.resx">
       <DependentUpon>202608171028508_UpdateSaleFlow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608171145216_UpdateBatch-BatchAlloc.resx">
+      <DependentUpon>202608171145216_UpdateBatch-BatchAlloc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608181120130_UpdateInventoryMovementFlow.resx">
+      <DependentUpon>202608181120130_UpdateInventoryMovementFlow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608181122479_UID.resx">
+      <DependentUpon>202608181122479_UID.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

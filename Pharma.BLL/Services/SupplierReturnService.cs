@@ -1,5 +1,6 @@
 ﻿using Pharma.Dal.Repositories;
 using Pharma.Entity.Entities;
+using Pharma.Entity.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -109,33 +110,93 @@ namespace Pharma.BLL.Services
                 DateTime.Now;
 
 
-            _repository.AddReturn(
-                supplierReturn
-            );
+            _repository.BeginTransaction();
 
-            _repository.SaveChanges();
-
-
-            foreach (var item in items)
+            try
             {
-                ValidateReturnItem(
-                    item,
-                    supplierReturn.PurchaseId
+                _repository.AddReturn(
+                    supplierReturn
                 );
 
-                item.SupplierReturnId =
-                    supplierReturn.SupplierReturnId;
+                _repository.SaveChanges();
 
-                item.Reason =
-                    item.Reason?.Trim();
 
-                _repository.AddReturnItem(item);
+                foreach (var item in items)
+                {
+                    ValidateReturnItem(
+                        item,
+                        supplierReturn.PurchaseId
+                    );
+
+
+                    var batch =
+                        _repository.GetBatchById(
+                            item.BatchId
+                        );
+
+
+                    item.ReturnAmount =
+                        item.ReturnQuantity *
+                        batch.PurchaseItem.UnitPurchasePrice;
+
+
+                    item.SupplierReturnId =
+                        supplierReturn.SupplierReturnId;
+
+                    item.Reason =
+                        item.Reason?.Trim();
+
+
+                    _repository.AddReturnItem(
+                        item
+                    );
+
+
+                    var movement =
+                        new InventoryMovement
+                        {
+                            BatchId =
+                                item.BatchId,
+
+                            MovementType =
+                                InventoryMovementType
+                                    .SupplierReturnOut,
+
+                            QuantityChange =
+                                -item.ReturnQuantity,
+
+                            ReferenceId =
+                                supplierReturn.SupplierReturnId,
+
+                            Remarks =
+                                "Stock returned to supplier.",
+
+                            MovementDate =
+                                DateTime.Now,
+
+                            PerformedByEmployeeId =
+                                employeeId
+                        };
+
+
+                    _repository.AddInventoryMovement(
+                        movement
+                    );
+                }
+
+
+                _repository.SaveChanges();
+
+                _repository.CommitTransaction();
+
+                return supplierReturn;
             }
+            catch
+            {
+                _repository.RollbackTransaction();
 
-
-            _repository.SaveChanges();
-
-            return supplierReturn;
+                throw;
+            }
         }
 
 
@@ -218,13 +279,6 @@ namespace Pharma.BLL.Services
             {
                 throw new ArgumentException(
                     "Return quantity must be greater than zero."
-                );
-            }
-
-            if (item.ReturnAmount < 0)
-            {
-                throw new ArgumentException(
-                    "Return amount cannot be negative."
                 );
             }
 

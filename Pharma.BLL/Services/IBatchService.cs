@@ -19,5 +19,6 @@ namespace Pharma.BLL.Services
             Batch batch,
             int employeeId
         );
+        void ProcessExpiredBatches(int employeeId);
     }
 }

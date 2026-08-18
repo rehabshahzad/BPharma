@@ -1,5 +1,6 @@
 ﻿using Pharma.Dal.Repositories;
 using Pharma.Entity.Entities;
+using Pharma.Entity.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -230,7 +231,7 @@ namespace Pharma.BLL.Services
                 foreach (var saleItem in items)
                 {
                     AllocateBatches(
-                        saleItem
+                        saleItem, employeeId
                     );
                 }
 
@@ -417,7 +418,7 @@ namespace Pharma.BLL.Services
         // ===================================================
 
         private void AllocateBatches(
-            SaleItem saleItem)
+            SaleItem saleItem, int employeeId)
         {
             /*
              * Repository returns usable batches
@@ -501,6 +502,34 @@ namespace Pharma.BLL.Services
 
                 _repository.AddBatchAllocation(
                     allocation
+                );
+                var movement =
+    new InventoryMovement
+    {
+        BatchId =
+            batch.BatchId,
+
+        MovementType =
+            InventoryMovementType.SaleOut,
+
+        QuantityChange =
+            -quantityToAllocate,
+
+        ReferenceId =
+            saleItem.SaleItemId,
+
+        Remarks =
+            "Stock sold.",
+
+        MovementDate =
+            DateTime.Now,
+
+        PerformedByEmployeeId = employeeId
+            
+    };
+
+                _repository.AddInventoryMovement(
+                    movement
                 );
 
 

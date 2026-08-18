@@ -116,7 +116,13 @@ namespace Pharma.Dal.Repositories
             _transaction?.Dispose();
             _transaction = null;
         }
-
+        public void AddInventoryMovement(
+    InventoryMovement movement)
+        {
+            _context.InventoryMovements.Add(
+                movement
+            );
+        }
 
     }
    

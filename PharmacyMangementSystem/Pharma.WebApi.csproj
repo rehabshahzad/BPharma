@@ -224,6 +224,7 @@
     <Compile Include="Controllers\CustomerReturnController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\FormulaController.cs" />
+    <Compile Include="Controllers\InventoryMovementController.cs" />
     <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Controllers\PurchaseController.cs" />
     <Compile Include="Controllers\SaleController.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="DTOs\Category\CategoryResponseDto.cs" />
     <Compile Include="DTOs\Category\CreateCategoryDto.cs" />
     <Compile Include="DTOs\Category\UpdateCategoryDto.cs" />
+    <Compile Include="DTOs\CreateInventoryMovementDto.cs" />
     <Compile Include="DTOs\CustomerDto.cs" />
     <Compile Include="DTOs\CustomerReturnDto.cs" />
     <Compile Include="DTOs\CustomerReturnItemDto.cs" />
@@ -243,6 +245,7 @@
     <Compile Include="DTOs\Employee\EmployeeResponseDto.cs" />
     <Compile Include="DTOs\Employee\UpdateEmployeeDto.cs" />
     <Compile Include="DTOs\FormulaDto.cs" />
+    <Compile Include="DTOs\InventoryMovementDto.cs" />
     <Compile Include="DTOs\ItemDto.cs" />
     <Compile Include="DTOs\PurchaseDto.cs" />
     <Compile Include="DTOs\PurchaseItemDto.cs" />

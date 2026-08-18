@@ -506,7 +506,11 @@ namespace Pharma.DAL.Context
                 .WithMany()
                 .HasForeignKey(im => im.PerformedByEmployeeId)
                 .WillCascadeOnDelete(false);
-        
+
+            modelBuilder.Entity<InventoryMovement>()
+      .Property(im => im.Remarks)
+      .HasMaxLength(500);
+
 
             //SUPPLIER RETURN
             modelBuilder.Entity<SupplierReturn>()

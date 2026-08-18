@@ -44,5 +44,9 @@ namespace Pharma.Dal.Repositories
         );
 
         void SaveChanges();
+        void AddInventoryMovement(InventoryMovement movement);
+        void BeginTransaction();
+        void CommitTransaction();
+        void RollbackTransaction();
     }
 }

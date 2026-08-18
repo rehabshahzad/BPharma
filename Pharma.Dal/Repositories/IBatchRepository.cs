@@ -22,5 +22,14 @@ namespace Pharma.Dal.Repositories
         void AddBatch(Batch batch);
 
         void SaveChanges();
+        void AddInventoryMovement(InventoryMovement movement);
+        void BeginTransaction();
+        void CommitTransaction();
+        void RollbackTransaction();
+        List<Batch> GetExpiredAvailableBatches();
+
+        int GetCurrentStockForBatch(int batchId);
+
+        
     }
 }

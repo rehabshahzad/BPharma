@@ -1,5 +1,6 @@
 ﻿using Pharma.Dal.Repositories;
 using Pharma.Entity.Entities;
+using Pharma.Entity.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -15,12 +16,10 @@ namespace Pharma.BLL.Services
             _repository = repository;
         }
 
-
         public List<CustomerReturn> GetAllCustomerReturns()
         {
             return _repository.GetAllCustomerReturns();
         }
-
 
         public CustomerReturn GetCustomerReturnById(int id)
         {
@@ -31,10 +30,8 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             var customerReturn =
                 _repository.GetCustomerReturnById(id);
-
 
             if (customerReturn == null)
             {
@@ -43,10 +40,8 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             return customerReturn;
         }
-
 
         public CustomerReturn CreateCustomerReturn(
             CustomerReturn customerReturn,
@@ -61,14 +56,12 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             if (employeeId <= 0)
             {
                 throw new ArgumentException(
                     "Employee id is invalid."
                 );
             }
-
 
             if (customerReturn.SaleId <= 0)
             {
@@ -77,7 +70,6 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             if (items == null || items.Count == 0)
             {
                 throw new ArgumentException(
@@ -85,12 +77,10 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             var sale =
                 _repository.GetSaleById(
                     customerReturn.SaleId
                 );
-
 
             if (sale == null)
             {
@@ -98,7 +88,6 @@ namespace Pharma.BLL.Services
                     "Sale does not exist."
                 );
             }
-
 
             customerReturn.Remarks =
                 customerReturn.Remarks?.Trim();
@@ -112,51 +101,88 @@ namespace Pharma.BLL.Services
             customerReturn.CreatedAt =
                 DateTime.Now;
 
+            _repository.BeginTransaction();
 
-            _repository.AddReturn(
-                customerReturn
-            );
-
-            _repository.SaveChanges();
-
-
-            foreach (var item in items)
+            try
             {
-                ValidateReturnItem(
-                    item,
-                    customerReturn.SaleId
+                _repository.AddReturn(
+                    customerReturn
                 );
 
+                _repository.SaveChanges();
 
-                var saleItem =
-                    _repository.GetSaleItemById(
-                        item.SaleItemId
+                foreach (var item in items)
+                {
+                    ValidateReturnItem(
+                        item,
+                        customerReturn.SaleId
                     );
 
+                    var saleItem =
+                        _repository.GetSaleItemById(
+                            item.SaleItemId
+                        );
 
-                // Refund amount calculated by backend
-                item.RefundAmount =
-                    item.ReturnQuantity *
-                    saleItem.UnitSalePrice;
+                    item.RefundAmount =
+                        item.ReturnQuantity *
+                        saleItem.UnitSalePrice;
 
+                    item.CustomerReturnId =
+                        customerReturn.CustomerReturnId;
 
-                item.CustomerReturnId =
-                    customerReturn.CustomerReturnId;
+                    item.Reason =
+                        item.Reason?.Trim();
 
+                    _repository.AddReturnItem(
+                        item
+                    );
 
-                item.Reason =
-                    item.Reason?.Trim();
+                    if (item.CanReturnToStock)
+                    {
+                        var movement =
+                            new InventoryMovement
+                            {
+                                BatchId =
+                                    item.BatchId,
 
+                                MovementType =
+                                    InventoryMovementType.CustomerReturnIn,
 
-                _repository.AddReturnItem(item);
+                                QuantityChange =
+                                    item.ReturnQuantity,
+
+                                ReferenceId =
+                                    customerReturn.CustomerReturnId,
+
+                                Remarks =
+                                    "Customer return added back to stock.",
+
+                                MovementDate =
+                                    DateTime.Now,
+
+                                PerformedByEmployeeId =
+                                    employeeId
+                            };
+
+                        _repository.AddInventoryMovement(
+                            movement
+                        );
+                    }
+                }
+
+                _repository.SaveChanges();
+
+                _repository.CommitTransaction();
+
+                return customerReturn;
             }
+            catch
+            {
+                _repository.RollbackTransaction();
 
-
-            _repository.SaveChanges();
-
-            return customerReturn;
+                throw;
+            }
         }
-
 
         public CustomerReturn UpdateCustomerReturn(
             int id,
@@ -170,14 +196,12 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             if (employeeId <= 0)
             {
                 throw new ArgumentException(
                     "Employee id is invalid."
                 );
             }
-
 
             if (customerReturn == null)
             {
@@ -187,10 +211,8 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             var existing =
                 _repository.GetCustomerReturnById(id);
-
 
             if (existing == null)
             {
@@ -198,7 +220,6 @@ namespace Pharma.BLL.Services
                     "Customer return does not exist."
                 );
             }
-
 
             existing.Remarks =
                 customerReturn.Remarks?.Trim();
@@ -212,12 +233,10 @@ namespace Pharma.BLL.Services
             existing.UpdatedAt =
                 DateTime.Now;
 
-
             _repository.SaveChanges();
 
             return existing;
         }
-
 
         private void ValidateReturnItem(
             CustomerReturnItem item,
@@ -230,14 +249,12 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             if (item.SaleItemId <= 0)
             {
                 throw new ArgumentException(
                     "Sale item id is invalid."
                 );
             }
-
 
             if (item.BatchId <= 0)
             {
@@ -246,7 +263,6 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             if (item.ReturnQuantity <= 0)
             {
                 throw new ArgumentException(
@@ -254,12 +270,10 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             var saleItem =
                 _repository.GetSaleItemById(
                     item.SaleItemId
                 );
-
 
             if (saleItem == null)
             {
@@ -268,12 +282,10 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             var batch =
                 _repository.GetBatchById(
                     item.BatchId
                 );
-
 
             if (batch == null)
             {
@@ -281,7 +293,6 @@ namespace Pharma.BLL.Services
                     "Batch does not exist."
                 );
             }
-
 
             if (!_repository.SaleItemBelongsToSale(
                 item.SaleItemId,
@@ -292,7 +303,6 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             if (!_repository.BatchWasUsedForSaleItem(
                 item.BatchId,
                 item.SaleItemId))
@@ -302,13 +312,11 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             var batchAllocation =
                 _repository.GetBatchAllocation(
                     item.BatchId,
                     item.SaleItemId
                 );
-
 
             if (batchAllocation == null)
             {
@@ -317,18 +325,15 @@ namespace Pharma.BLL.Services
                 );
             }
 
-
             var alreadyReturned =
                 _repository.GetAlreadyReturnedQuantity(
                     item.SaleItemId,
                     item.BatchId
                 );
 
-
             var remainingReturnable =
                 batchAllocation.AllocatedQuantity -
                 alreadyReturned;
-
 
             if (remainingReturnable <= 0)
             {
@@ -336,7 +341,6 @@ namespace Pharma.BLL.Services
                     "No quantity remains available for return."
                 );
             }
-
 
             if (item.ReturnQuantity >
                 remainingReturnable)

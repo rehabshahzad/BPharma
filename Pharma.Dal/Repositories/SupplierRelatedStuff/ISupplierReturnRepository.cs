@@ -23,5 +23,10 @@ namespace Pharma.Dal.Repositories
         void AddReturnItem(SupplierReturnItem item);
 
         void SaveChanges();
+        void AddInventoryMovement(InventoryMovement movement);
+
+        void BeginTransaction();
+        void CommitTransaction();
+        void RollbackTransaction();
     }
 }

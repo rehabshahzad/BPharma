@@ -1,7 +1,9 @@
 ﻿using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+
 
 namespace Pharma.Dal.Repositories
 {
@@ -9,6 +11,7 @@ namespace Pharma.Dal.Repositories
         : ICustomerReturnRepository
     {
         private readonly PharmacyDbContext _context;
+        private DbContextTransaction _transaction;
 
         public CustomerReturnRepository(
             PharmacyDbContext context)
@@ -135,6 +138,31 @@ namespace Pharma.Dal.Repositories
         public void SaveChanges()
         {
             _context.SaveChanges();
+        }
+        public void AddInventoryMovement(InventoryMovement movement)
+        {
+            _context.InventoryMovements.Add(movement);
+        }
+
+
+        public void BeginTransaction()
+        {
+            _transaction =
+                _context.Database.BeginTransaction();
+        }
+
+        public void CommitTransaction()
+        {
+            _transaction?.Commit();
+            _transaction?.Dispose();
+            _transaction = null;
+        }
+
+        public void RollbackTransaction()
+        {
+            _transaction?.Rollback();
+            _transaction?.Dispose();
+            _transaction = null;
         }
     }
 }
