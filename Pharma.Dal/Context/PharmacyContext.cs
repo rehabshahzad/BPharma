@@ -73,7 +73,7 @@ namespace Pharma.DAL.Context
                 .HasMaxLength(50);
 
             modelBuilder.Entity<Employee>()
-                .Property(e => e.TempPasswordHash)
+                .Property(e => e.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(255);
 

@@ -103,7 +103,7 @@ namespace Pharma.BLL.Services
             employee.Email = employee.Email.Trim();
             employee.Username = employee.Username.Trim();
 
-            employee.TempPasswordHash =
+            employee.PasswordHash =
                 PasswordHasher.HashPassword(temporaryPassword);
 
             employee.IsActive = true;

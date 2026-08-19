@@ -27,7 +27,7 @@ namespace PharmacyManagement.Entity.Entities
         public bool IsActive { get; set; }
 
         public string Username { get; set; }
-        public string TempPasswordHash { get; set; }
+        public string PasswordHash { get; set; }
 
         public bool IsPasswordChanged { get; set; }
 

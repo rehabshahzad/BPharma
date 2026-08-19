@@ -144,6 +144,10 @@
     <Compile Include="Migrations\202608181122479_UID.Designer.cs">
       <DependentUpon>202608181122479_UID.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608190953299_TempPwChange.cs" />
+    <Compile Include="Migrations\202608190953299_TempPwChange.Designer.cs">
+      <DependentUpon>202608190953299_TempPwChange.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BatchRepository.cs" />
@@ -212,6 +216,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608181122479_UID.resx">
       <DependentUpon>202608181122479_UID.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608190953299_TempPwChange.resx">
+      <DependentUpon>202608190953299_TempPwChange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
