@@ -1,40 +1,33 @@
 ﻿using Pharma.BLL.Services;
-using Pharma.DAL.Context;
 using Pharma.Dal.Repositories;
+using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using PharmacyMangementSystem.DTOs.Formula;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 namespace PharmacyMangementSystem.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/formulas")]
     public class FormulaController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+    
         private readonly IFormulaService _service;
 
-        // Temporary until JWT/Auth is implemented
-        private const int CurrentEmployeeId = 1;
-
-
-        public FormulaController()
+        public FormulaController(IFormulaService service)
         {
-            _context = new PharmacyDbContext();
-
-            IFormulaRepository formulaRepository =
-                new FormulaRepository(_context);
-
-            _service =
-                new FormulaService(formulaRepository);
+            _service = service;
         }
-
+        
 
         // GET: api/formulas
         [HttpGet]
+        [Authorize(Roles = "Admin, Pharmacist, InventoryManager")]
         [Route("")]
         public IHttpActionResult GetAllFormulas()
         {
@@ -49,6 +42,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // GET: api/formulas/1
         [HttpGet]
+        [Authorize(Roles = "Admin, Pharmacist, InventoryManager")]
         [Route("{id:int}")]
         public IHttpActionResult GetFormulaById(int id)
         {
@@ -74,6 +68,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // POST: api/formulas
         [HttpPost]
+        [Authorize(Roles = "Admin, InventoryManager")]
         [Route("")]
         public IHttpActionResult CreateFormula(
             FormulaDto request)
@@ -96,7 +91,7 @@ namespace PharmacyMangementSystem.Controllers
                 var createdFormula =
                     _service.CreateFormula(
                         formula,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
                 return Content(
@@ -120,6 +115,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // PUT: api/formulas/1
         [HttpPut]
+        [Authorize(Roles = "Admin,InventoryManager")]
         [Route("{id:int}")]
         public IHttpActionResult UpdateFormula(
             int id,
@@ -147,7 +143,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.UpdateFormula(
                         id,
                         updatedFormula,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
                 return Ok(
@@ -193,17 +189,23 @@ namespace PharmacyMangementSystem.Controllers
                     formula.UpdatedAt
             };
         }
-
-
-        protected override void Dispose(
-            bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
+
+
+
     }
 }

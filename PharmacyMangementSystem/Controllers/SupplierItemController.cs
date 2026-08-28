@@ -1,40 +1,28 @@
 ﻿using Pharma.BLL.Services;
-using Pharma.DAL.Context;
 using Pharma.Dal.Repositories;
+using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using PharmacyMangementSystem.DTOs.SupplierItem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 namespace PharmacyMangementSystem.Controllers
 {
+    [Authorize(Roles = "Admin,InventoryManager")]
     [RoutePrefix("api/supplier-items")]
     public class SupplierItemController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+     
         private readonly ISupplierItemService _service;
 
-        // TEMPORARY until JWT/Auth is implemented
-        private const int CurrentEmployeeId = 1;
-
-
-        public SupplierItemController()
+   
+        public SupplierItemController(ISupplierItemService service)
         {
-            _context =
-                new PharmacyDbContext();
-
-            ISupplierItemRepository repository =
-                new SupplierItemRepository(
-                    _context
-                );
-
-            _service =
-                new SupplierItemService(
-                    repository
-                );
+            _service = service;
         }
 
 
@@ -113,7 +101,7 @@ namespace PharmacyMangementSystem.Controllers
                 var created =
                     _service.CreateSupplierItem(
                         supplierItem,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -181,7 +169,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.UpdateSupplierItem(
                         id,
                         supplierItem,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -239,15 +227,20 @@ namespace PharmacyMangementSystem.Controllers
         }
 
 
-        protected override void Dispose(
-            bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
     }
 }

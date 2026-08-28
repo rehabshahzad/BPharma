@@ -32,6 +32,10 @@ namespace Pharma.DAL.Repositories
         {
             _context.Employees.Add(employee);
         }
+        public Employee GetEmployeeByUsername(string username)
+        {
+            return _context.Employees.FirstOrDefault(e => e.Username== username);
+        }
 
        
 

@@ -1,39 +1,38 @@
 ﻿using Pharma.BLL.Services;
-using Pharma.DAL.Context;
 using Pharma.Dal.Repositories;
+using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using PharmacyMangementSystem.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
+
+
 
 namespace PharmacyMangementSystem.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/batches")]
     public class BatchController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+        
         private readonly IBatchService _service;
 
-        private const int CurrentEmployeeId = 1;
+        
 
 
-        public BatchController()
+        public BatchController(IBatchService service)
         {
-            _context = new PharmacyDbContext();
-
-            IBatchRepository repository =
-                new BatchRepository(_context);
-
-            _service =
-                new BatchService(repository);
+            _service = service;
         }
 
 
         // GET api/batches
         [HttpGet]
+        [Authorize(Roles = "Admin, Pharmacist, Inventorymanager")]
         [Route("")]
         public IHttpActionResult GetAll()
         {
@@ -51,6 +50,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // GET api/batches/1
         [HttpGet]
+        [Authorize(Roles = "Admin, Pharmacist, Inventorymanager")]
         [Route("{id:int}")]
         public IHttpActionResult GetById(int id)
         {
@@ -76,6 +76,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // POST api/batches
         [HttpPost]
+        [Authorize(Roles = "Admin, Inventorymanager")]
         [Route("")]
         public IHttpActionResult Create(BatchDto dto)
         {
@@ -111,7 +112,7 @@ namespace PharmacyMangementSystem.Controllers
                 var created =
                     _service.CreateBatch(
                         batch,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -144,6 +145,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // PUT api/batches/1
         [HttpPut]
+        [Authorize(Roles = "Admin,Inventorymanager")]
         [Route("{id:int}")]
         public IHttpActionResult Update(
             int id,
@@ -185,7 +187,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.UpdateBatch(
                         id,
                         batch,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -248,17 +250,22 @@ namespace PharmacyMangementSystem.Controllers
                     batch.UpdatedAt
             };
         }
-
-
-        protected override void Dispose(
-            bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");//look into logged-in user's claims and find the one called EmployeeId
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value); //claim.value is a string but we need an int
         }
+
+        
     }
 }

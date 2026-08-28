@@ -1,34 +1,30 @@
 ﻿using Pharma.BLL.Services;
-using Pharma.DAL.Context;
 using Pharma.Dal.Repositories;
+using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using PharmacyMangementSystem.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 namespace PharmacyMangementSystem.Controllers
 {
+    [Authorize(Roles = "Admin, Pharmacist")]
     [RoutePrefix("api/sales")]
     public class SaleController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+     
         private readonly ISaleService _service;
 
-        private const int CurrentEmployeeId = 1;
+        
 
 
-        public SaleController()
+        public SaleController(ISaleService service)
         {
-            _context = new PharmacyDbContext();
-
-            ISaleRepository repository =
-                new SaleRepository(_context);
-
-            _service =
-                new SaleService(repository);
+           _service=    service;
         }
 
 
@@ -121,7 +117,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.CreateSale(
                         sale,
                         items,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -186,7 +182,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.UpdateSale(
                         id,
                         sale,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -271,15 +267,20 @@ namespace PharmacyMangementSystem.Controllers
         }
 
 
-        protected override void Dispose(
-            bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
     }
 }

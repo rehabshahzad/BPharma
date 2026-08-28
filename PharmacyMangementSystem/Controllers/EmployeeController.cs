@@ -7,31 +7,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 namespace PharmacyMangementSystem.Controllers
 {
+    [Authorize( Roles = "Admin")]
     [RoutePrefix("api/employees")]
     public class EmployeesController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+       
         private readonly IEmployeeService _employeeService;
-     
+    
 
-        // TEMPORARY until authentication/JWT is implemented.
-        // We are pretending EmployeeId 1 is currently logged in.
-        private const int CurrentEmployeeId = 1;
-
-
-        public EmployeesController()
+        public EmployeesController(IEmployeeService service)
         {
-            _context = new PharmacyDbContext();
-
-            IEmployeeRepository employeeRepository =
-                new EmployeeRepository(_context);
-
-            _employeeService =
-                new EmployeeService(employeeRepository);
+           _employeeService = service;
         }
 
 
@@ -99,7 +90,7 @@ namespace PharmacyMangementSystem.Controllers
                     _employeeService.CreateEmployee(
                         employee,
                         request.TemporaryPassword,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -158,7 +149,7 @@ namespace PharmacyMangementSystem.Controllers
                         updatedEmployee,
 
                         // Later this comes from JWT/claims.
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
                 return Ok(
@@ -206,15 +197,21 @@ namespace PharmacyMangementSystem.Controllers
             };
         }
 
-
-        protected override void Dispose(bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
+
     }
 }

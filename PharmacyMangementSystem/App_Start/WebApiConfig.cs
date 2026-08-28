@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PharmacyMangementSystem.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -9,6 +10,7 @@ namespace PharmacyMangementSystem
     {
         public static void Register(HttpConfiguration config)
         {
+            config.MessageHandlers.Add(new JwtAuthenticationHandler());
             // Web API configuration and services
 
             // Web API routes

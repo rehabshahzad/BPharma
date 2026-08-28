@@ -20,4 +20,5 @@ public interface IEmployeeRepository
     );
 
     void SaveChanges();
+    Employee GetEmployeeByUsername( string username );
 }

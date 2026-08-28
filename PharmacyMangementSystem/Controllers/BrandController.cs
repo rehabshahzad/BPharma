@@ -7,33 +7,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 namespace PharmacyMangementSystem.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/brands")]
     public class BrandController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+        
         private readonly IBrandService _service;
 
-        // TEMPORARY until JWT/Auth is implemented
-        private const int CurrentEmployeeId = 1;
-
-
-        public BrandController()
+        public BrandController(IBrandService service)
         {
-            _context = new PharmacyDbContext();
-
-            IBrandRepository brandRepository =
-                new BrandRepository(_context);
-
-            _service =
-                new BrandService(brandRepository);
+            _service = service;
         }
 
 
         // GET: api/brands
+        [Authorize(Roles = "Admin, Pharmacist, InventoryManager")]
         [HttpGet]
         [Route("")]
         public IHttpActionResult GetAllBrands()
@@ -49,6 +42,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // GET: api/brands/1
         [HttpGet]
+        [Authorize(Roles = "Admin, Pharmacist, InventoryManager")]
         [Route("{id:int}")]
         public IHttpActionResult GetBrandById(int id)
         {
@@ -74,6 +68,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // POST: api/brands
         [HttpPost]
+        [Authorize(Roles = "Admin,InventoryManager")]
         [Route("")]
         public IHttpActionResult CreateBrand(
             BrandDto request)
@@ -95,7 +90,7 @@ namespace PharmacyMangementSystem.Controllers
                 var createdBrand =
                     _service.CreateBrand(
                         brand,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
                 return Content(
@@ -119,6 +114,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // PUT: api/brands/1
         [HttpPut]
+        [Authorize(Roles = "Admin,InventoryManager")]
         [Route("{id:int}")]
         public IHttpActionResult UpdateBrand(
             int id,
@@ -143,7 +139,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.UpdateBrand(
                         id,
                         updatedBrand,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
                 return Ok(
@@ -180,16 +176,23 @@ namespace PharmacyMangementSystem.Controllers
                 UpdatedAt = brand.UpdatedAt
             };
         }
-
-
-        protected override void Dispose(bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
+
+
+
     }
 }

@@ -1,29 +1,29 @@
 ﻿using Pharma.BLL.Services;
-using Pharma.DAL.Context;
 using Pharma.Dal.Repositories;
+using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using PharmacyMangementSystem.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 
 namespace PharmacyMangementSystem.Controllers
 {
     [RoutePrefix("api/purchases")]
+    [Authorize(Roles = "Admin,InventoryManager")]
     public class PurchaseController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+      
         private readonly IPurchaseService _service;
-        private const int CurrentEmployeeId = 1;
+        
 
-        public PurchaseController()
+        public PurchaseController(IPurchaseService service)
         {
-            _context = new PharmacyDbContext();
-            IPurchaseRepository _repo = new PurchaseRepository(_context);
-            _service = new PurchaseService(_repo);
+            _service = service;
 
         }
         //GET api/purchases
@@ -86,7 +86,7 @@ namespace PharmacyMangementSystem.Controllers
                 }).ToList();
 
                 var created = _service.CreatePurchase( 
-                    purchase, items, CurrentEmployeeId);
+                    purchase, items, GetCurrentEmployeeId());
 
                 return Content(HttpStatusCode.Created, MapToDto(created));
 
@@ -124,7 +124,7 @@ namespace PharmacyMangementSystem.Controllers
                     Status = dto.Status
                 };
                 var updated = _service.UpdatePurchase(
-                    id, purchase, CurrentEmployeeId);
+                    id, purchase, GetCurrentEmployeeId());
                 return Ok(MapToDto(updated));
 
 
@@ -177,14 +177,20 @@ namespace PharmacyMangementSystem.Controllers
 
             };
         }
-        protected override void Dispose(bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
-            {
-                _context.Dispose();
-            }
-            base.Dispose(disposing);
+            var identity = User.Identity as ClaimsIdentity;
 
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
+            {
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
+            }
+
+            return int.Parse(claim.Value);
         }
     }
 }

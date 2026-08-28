@@ -8,33 +8,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
+using System.Security.Claims;
 
 namespace PharmacyMangementSystem.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/categories")]
     public class CategoryController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+       
         private readonly ICategoryService _service;
 
-        // Temporary until authentication/JWT is implemented.
-        private const int CurrentEmployeeId = 1;
-
-
-        public CategoryController()
+        
+   
+        public CategoryController(ICategoryService service)
         {
-            _context = new PharmacyDbContext();
-
-            ICategoryRepository categoryRepository =
-                new CategoryRepository(_context);
-
-            _service =
-                new CategoryService(categoryRepository);
+            _service = service;
         }
 
 
         // GET: api/categories
         [HttpGet]
+        [Authorize(Roles = "Admin, Pharmacist, InventoryManager")]
         [Route("")]
         public IHttpActionResult GetAllCategories()
         {
@@ -49,6 +44,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // GET: api/categories/1
         [HttpGet]
+        [Authorize(Roles = "Admin, Pharmacist, InventoryManager")]
         [Route("{id:int}")]
         public IHttpActionResult GetCategoryById(int id)
         {
@@ -74,6 +70,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // POST: api/categories
         [HttpPost]
+        [Authorize(Roles = "Admin,InventoryManager")]
         [Route("")]
         public IHttpActionResult Create(
             CreateCategoryDto request)
@@ -99,7 +96,7 @@ namespace PharmacyMangementSystem.Controllers
                 var createdCategory =
                     _service.CreateCategory(
                         category,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
                 return Content(
@@ -123,6 +120,7 @@ namespace PharmacyMangementSystem.Controllers
 
         // PUT: api/categories/1
         [HttpPut]
+        [Authorize(Roles = "Admin, InventoryManager")]
         [Route("{id:int}")]
         public IHttpActionResult Update(
             int id,
@@ -153,7 +151,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.UpdateCategory(
                         id,
                         updatedCategory,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
                 return Ok(
@@ -192,16 +190,17 @@ namespace PharmacyMangementSystem.Controllers
                 UpdatedAt = c.UpdatedAt
             };
         }
-
-
-        protected override void Dispose(bool disposing)
+       
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+            var claim = identity?.FindFirst("EmployeeId");
+            if(claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException("Employee ID claim ot found");
             }
-
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
+       
     }
 }

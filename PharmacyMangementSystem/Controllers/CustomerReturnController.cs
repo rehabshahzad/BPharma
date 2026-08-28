@@ -1,41 +1,28 @@
 ﻿using Pharma.BLL.Services;
-using Pharma.DAL.Context;
 using Pharma.Dal.Repositories;
+using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using PharmacyMangementSystem.DTOs.CustomerReturn;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 namespace PharmacyMangementSystem.Controllers
 {
     [RoutePrefix("api/customer-returns")]
+
+    [Authorize(Roles = "Admin,Pharmacist")]
     public class CustomerReturnController
         : ApiController
     {
-        private readonly PharmacyDbContext _context;
+
         private readonly ICustomerReturnService _service;
-
-        // TEMPORARY until JWT/Auth
-        private const int CurrentEmployeeId = 1;
-
-
-        public CustomerReturnController()
+        public CustomerReturnController(ICustomerReturnService service)
         {
-            _context =
-                new PharmacyDbContext();
-
-            ICustomerReturnRepository repository =
-                new CustomerReturnRepository(
-                    _context
-                );
-
-            _service =
-                new CustomerReturnService(
-                    repository
-                );
+            _service = service;
         }
 
 
@@ -144,7 +131,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.CreateCustomerReturn(
                         customerReturn,
                         items,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -207,7 +194,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.UpdateCustomerReturn(
                         id,
                         customerReturn,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -283,18 +270,26 @@ namespace PharmacyMangementSystem.Controllers
                             })
                         .ToList()
             };
-        }
-
-
-        protected override void Dispose(
-            bool disposing)
+            }
+            
+            private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
     }
+
 }
+
+
+    

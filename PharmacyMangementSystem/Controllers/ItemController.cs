@@ -1,39 +1,32 @@
 ﻿using Pharma.BLL.Services;
-using Pharma.DAL.Context;
 using Pharma.Dal.Repositories;
+using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using PharmacyMangementSystem.DTOs.Item;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 namespace PharmacyMangementSystem.Controllers
 {
     [RoutePrefix("api/items")]
+    [Authorize]
     public class ItemController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+       
         private readonly IItemService _service;
 
-        // TEMPORARY until JWT/Auth
-        private const int CurrentEmployeeId = 1;
-
-
-        public ItemController()
+    
+        public ItemController(IItemService service)
         {
-            _context =
-                new PharmacyDbContext();
-
-            IItemRepository itemRepository =
-                new ItemRepository(_context);
-
-            _service =
-                new ItemService(itemRepository);
+            _service= service;
+           
         }
 
-
+        [Authorize (Roles ="Admin, Pharmacist, InventoryManager")]
         // GET: api/items
         [HttpGet]
         [Route("")]
@@ -48,7 +41,7 @@ namespace PharmacyMangementSystem.Controllers
             return Ok(items);
         }
 
-
+        [Authorize(Roles = "Admin, Pharmacist, InventoryManager")]
         // GET: api/items/1
         [HttpGet]
         [Route("{id:int}")]
@@ -76,7 +69,7 @@ namespace PharmacyMangementSystem.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin, InventoryManager")]
         // POST: api/items
         [HttpPost]
         [Route("")]
@@ -139,7 +132,7 @@ namespace PharmacyMangementSystem.Controllers
                 var createdItem =
                     _service.CreateItem(
                         item,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -165,7 +158,7 @@ namespace PharmacyMangementSystem.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin,InventoryManager")]
         // PUT: api/items/1
         [HttpPut]
         [Route("{id:int}")]
@@ -233,7 +226,7 @@ namespace PharmacyMangementSystem.Controllers
                     _service.UpdateItem(
                         id,
                         item,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -317,16 +310,21 @@ namespace PharmacyMangementSystem.Controllers
             };
         }
 
-
-        protected override void Dispose(
-            bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
+
     }
 }

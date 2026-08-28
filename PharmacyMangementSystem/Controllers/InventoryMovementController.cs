@@ -1,43 +1,31 @@
 ﻿using Pharma.BLL.DTOs;
 using Pharma.BLL.Services;
-using Pharma.DAL.Context;
 using Pharma.Dal.Repositories;
+using Pharma.DAL.Context;
 using Pharma.Entity.Entities;
 using Pharma.Entity.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 namespace PharmacyMangementSystem.Controllers
-{
+{     
     [RoutePrefix("api/inventory-movements")]
+    [Authorize]
     public class InventoryMovementController : ApiController
     {
-        private readonly PharmacyDbContext _context;
+       
         private readonly IInventoryMovementService _service;
 
-        private const int CurrentEmployeeId = 1;
-
-
-        public InventoryMovementController()
+        public InventoryMovementController( IInventoryMovementService service)
         {
-            _context =
-                new PharmacyDbContext();
-
-            IInventoryMovementRepository repository =
-                new InventoryMovementRepository(
-                    _context
-                );
-
-            _service =
-                new InventoryMovementService(
-                    repository
-                );
+            _service = service;
         }
 
-
+        [Authorize( Roles ="Admin,Pharmacist, InventoryManager")]
         [HttpGet]
         [Route("")]
         public IHttpActionResult GetAll()
@@ -54,6 +42,7 @@ namespace PharmacyMangementSystem.Controllers
         }
 
 
+        [Authorize(Roles = "Admin,Pharmacist, InventoryManager")]
         [HttpGet]
         [Route("{id:int}")]
         public IHttpActionResult GetById(int id)
@@ -77,7 +66,7 @@ namespace PharmacyMangementSystem.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin,Pharmacist, InventoryManager")]
         [HttpGet]
         [Route("batch/{batchId:int}")]
         public IHttpActionResult GetByBatch(
@@ -108,7 +97,7 @@ namespace PharmacyMangementSystem.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin,InventoryManager")]
         [HttpPost]
         [Route("")]
         public IHttpActionResult CreateManualMovement(
@@ -143,7 +132,7 @@ namespace PharmacyMangementSystem.Controllers
                         dto.Quantity,
                         null,
                         dto.Remarks,
-                        CurrentEmployeeId
+                        GetCurrentEmployeeId()
                     );
 
 
@@ -201,16 +190,24 @@ namespace PharmacyMangementSystem.Controllers
             };
         }
 
-
-        protected override void Dispose(
-            bool disposing)
+        private int GetCurrentEmployeeId()
         {
-            if (disposing)
+            var identity = User.Identity as ClaimsIdentity;
+
+            var claim = identity?.FindFirst("EmployeeId");
+
+            if (claim == null)
             {
-                _context.Dispose();
+                throw new UnauthorizedAccessException(
+                    "Employee ID claim not found."
+                );
             }
 
-            base.Dispose(disposing);
+            return int.Parse(claim.Value);
         }
+
+
+
+
     }
 }
