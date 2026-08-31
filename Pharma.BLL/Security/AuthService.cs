@@ -16,8 +16,7 @@ namespace Pharma.BLL.Security
         public string Login(string username, string password)
 
         {
-            string newHash = PasswordHasher.HashPassword("NewAdmin123!");
-            System.Diagnostics.Debug.WriteLine(newHash);
+            
             var employee = _employeeRepository.GetEmployeeByUsername(username);
 
             if (employee == null)
